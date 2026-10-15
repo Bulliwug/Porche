@@ -18,12 +18,13 @@ python scrape.py --out data                 # tutti i modelli (~83), circa 7 min
 python scrape.py --models 992142 --out data # solo alcuni modelli
 python extract.py --data data --xlsx porsche_configuratore.xlsx
 ```
-Altri mercati: `--locale de-DE --market germany` (i nomi delle colonne chiave della scheda tecnica
-nel foglio Modelli sono riconosciuti sulle etichette italiane).
+Altri mercati, per esempio USA: `--locale en-US --market usa` (POC Macan GTS in `poc_us/`).
+Le colonne chiave del foglio Modelli riconoscono le etichette italiane e inglesi; i prezzi sono
+nella valuta del mercato (colonna `valuta`). I prezzi USA sono MSRP: di norma escludono tasse e destination fee (da verificare sul sito).
 
 ## Output (`porsche_configuratore.xlsx` + un CSV per foglio)
 - **Modelli** – codice, nome, anno, gamma, carrozzeria, trazione, cambio, prezzo base, potenza, 0-100, velocità max, consumi, dimensioni…
-- **Optional** – ogni optional per modello: sezione, categoria, gruppo, codice, nome, prezzo €, di serie, descrizione, contenuto pacchetti
+- **Optional** – ogni optional per modello: sezione, categoria, gruppo, codice, nome, prezzo + valuta, di serie, descrizione, contenuto pacchetti
 - **DatiTecnici** – scheda tecnica completa in formato lungo (modello, categoria, voce, valore)
 - **DotazioneSerie** – equipaggiamento di serie per modello
 

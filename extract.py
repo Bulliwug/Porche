@@ -20,25 +20,33 @@ import pandas as pd
 
 # voci della scheda tecnica riportate anche come colonne nel foglio Modelli
 KEY_SPECS = {  # per ogni colonna: pattern in ordine di priorità
-    "potenza_kW": [r"^Potenza combinata \(kW\)", r"^Potenza fino a \(kW\)", r"^Potenza \(kW\)$"],
+    # etichette italiane e inglesi (mercato USA)
+    "potenza_kW": [r"^Potenza combinata \(kW\)", r"^Potenza fino a \(kW\)", r"^Potenza \(kW\)$",
+                   r"^Power up to \(kW\)"],
     "potenza_CV": [r"^Potenza combinata \(CV\)", r"^Potenza fino a \(CV\)", r"^Potenza \(CV\)$"],
-    "potenza_overboost_kW": [r"^Potenza di overboost .*\(kW\)"],
-    "coppia_max": [r"^Coppia combinata", r"^Coppia massima$", r"^Coppia massima"],
-    "cilindrata": [r"^Cilindrata$"],
+    "potenza_hp": [r"^Power up to \(HP\)", r"^Max\. engine power$"],
+    "potenza_overboost_kW": [r"^Potenza di overboost .*\(kW\)", r"^Overboost Power .*\(kW\)"],
+    "coppia_max": [r"^Coppia combinata", r"^Coppia massima$", r"^Coppia massima",
+                   r"^Max\. engine torque$", r"^Max\. torque"],
+    "cilindrata": [r"^Cilindrata$", r"^Displacement$"],
     "0_100_kmh": [r"^Accelerazione 0 - 100 km/h"],
-    "velocita_max": [r"^Velocità massima$"],
+    "0_60_mph": [r"^0 - 60 mph with (Sport Chrono|Launch Control)", r"^0 - 60 mph$"],
+    "velocita_max": [r"^Velocità massima$", r"^Top track speed"],
+    "consumo_mpg_combinato": [r"^Combined$"],
     "consumo_carburante_misto": [r"^Consumo carburante ponderato misto", r"^Consumo carburante ciclo misto"],
     "consumo_elettrico_misto": [r"^Consumo (di )?energia elettrica ponderato misto",
                                 r"^Consumo (di )?energia elettrica ciclo misto"],
     "co2_misto": [r"^Emissioni CO.? ponderat", r"^Emissioni CO.? ciclo misto"],
     "autonomia_elettrica": [r"^Autonomia elettrica (combinata|ciclo misto)", r"^Autonomia elettrica"],
-    "batteria": [r"^Capacità (complessiva|lorda|netta) della batteria"],
-    "ricarica_DC_10_80": [r"^Tempo di ricarica in corrente continua"],
-    "lunghezza": [r"^Lunghezza$"],
-    "larghezza": [r"^Larghezza$", r"^Larghezza"],
-    "altezza": [r"^Altezza$", r"^Altezza \("],
-    "passo": [r"^Passo$"],
+    "batteria": [r"^Capacità (complessiva|lorda|netta) della batteria", r"^Gross battery capacity"],
+    "ricarica_DC_10_80": [r"^Tempo di ricarica in corrente continua",
+                          r"^Charging time for direct current \(DC\) with maximum"],
+    "lunghezza": [r"^Lunghezza$", r"^Length$"],
+    "larghezza": [r"^Larghezza$", r"^Larghezza", r"^Width \(without mirrors\)"],
+    "altezza": [r"^Altezza$", r"^Altezza \(", r"^Height$", r"^Height \(air suspension\) \(standard"],
+    "passo": [r"^Passo$", r"^Wheelbase$"],
     "peso_DIN": [r"^Peso a vuoto \(DIN\)"],
+    "peso_curb": [r"^Curb weight$"],
 }
 
 
@@ -79,6 +87,7 @@ def option_rows(code, name, conf):
     tr = conf.get("customer-locale", {}).get("translations", {})
     prices = (cc.get("configuration") or {}).get("prices", {}).get("options", {})
     selected = set((cc.get("configuration") or {}).get("options") or [])
+    currency = (cc.get("market") or {}).get("currency")
     rows, seen = [], set()
     cat_section = {cat.get("id"): sec.get("id")
                    for sec in (cc.get("views") or {}).get("optionsList") or []
@@ -100,7 +109,8 @@ def option_rows(code, name, conf):
             "gruppo": group_title or item.get("groupTitle"),
             "codice_optional": oid,
             "nome": clean(item.get("title")),
-            "prezzo_eur": price,
+            "prezzo": price,
+            "valuta": currency,
             "prezzo_testo": clean(item.get("price")) or ("Di serie" if item.get("isStandardEquipment") else None),
             "di_serie": bool(item.get("isStandardEquipment")),
             "selezionato_default": oid in selected or bool(item.get("isSelected")),
@@ -145,7 +155,8 @@ def model_row(code, ov, conf, td, n_opt):
         "posti": m.get("seats"),
         "alimentazione": m.get("fuelTypeText") or cat.get("engineType"),
         "cambio": m.get("gearTypeText"),
-        "prezzo_base_eur": base.get("raw") or (m.get("price") or {}).get("value"),
+        "prezzo_base": base.get("raw") or (m.get("price") or {}).get("value"),
+        "valuta": (cc.get("market") or {}).get("currency") or (m.get("price") or {}).get("currencyCode"),
         "prezzo_base_testo": clean(base.get("gross")) or (m.get("price") or {}).get("formattedValue"),
         "cerchi_di_serie": (cfg.get("wheelOption") or {}).get("title"),
         "trasmissione_di_serie": (cfg.get("transmissionOption") or {}).get("title"),
