@@ -31,9 +31,22 @@ configurator.porsche.com ──► SCRAPE_PORSCHE_MODEL (Python) ──► PORSC
 In Snowsight: **Projects → Worksheets → + → SQL Worksheet**, incolla il contenuto del file,
 seleziona tutto ed esegui (**Run All**). Un file per worksheet, in ordine.
 
-Risultato atteso al passo 5:
+Risultato atteso al passo 5 (listino del 06/11/2026):
 ```
-OK Macan GTS (95BBW1, en-US): prezzo base 94200 USD, 238 optional (149 a pagamento), snapshot ...
+OK Macan GTS (95BBW1, en-US): prezzo base 94200 USD (+2350 destination), 66 dotazioni di serie,
+116 optional singoli, 7 pacchetti, snapshot ...
+```
+
+### Campi COMPASS
+`PORSCHE_OPTIONS` classifica ogni voce con le stesse regole di `poc_compass/porsche_us.py`:
+`ITEM_TYPE` (Dotazione di serie / Componente singolo / Pacchetto / Colore / materiale / Accessorio / Servizio),
+`IN_SCOPE` (Sì / No / Da validare), `SCOPE_REASON`, `VEHICLE_AREA`. Viste pronte:
+`V_COMPASS_STANDARD` (dotazioni di serie) e `V_COMPASS_OPTIONS_IN_SCOPE` (optional singoli in perimetro).
+`PORSCHE_MODELS.DESTINATION_CHARGE` contiene la destination charge USA.
+
+Se le tabelle esistono già da una versione precedente, ricrearle (sono ancora vuote) o aggiungere le colonne:
+```sql
+ALTER TABLE PORSCHE_MODELS ADD COLUMN DESTINATION_CHARGE NUMBER(14,2);  -- poi riordinare: più semplice ricreare
 ```
 
 ## Codici utili
