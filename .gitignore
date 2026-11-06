@@ -5,3 +5,4 @@ porsche_configuratore_*.csv
 poc_us/raw/
 poc_us/*.csv
 poc_us/models_overview.json
+poc_compass/output/raw/
