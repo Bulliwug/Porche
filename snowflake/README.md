@@ -75,3 +75,15 @@ abilita `PORSCHE_CONFIGURATOR_EAI` nelle impostazioni del notebook (sezione *Ext
 
 Note: volume minimo (una pagina per modello, consentita dal `robots.txt` del configuratore);
 i prezzi USA sono MSRP, quelli europei includono l'IVA.
+
+## Piano B – estrazione dal PC, dati in Snowflake
+Se `CALL SCRAPE_PORSCHE_MODEL(...)` risponde `ERRORE: HTTP 403` (Porsche non accetta le richieste
+che partono da Snowflake), lo stesso codice gira dal PC e scrive nelle stesse tabelle.
+Servono solo `01_setup.sql` e `03_tables.sql` (non servono il passo 02 né la procedura).
+
+```bash
+pip install -r snowflake/requirements.txt
+python snowflake/load_from_local.py --dry-run                                  # prova: nessuna scrittura
+python snowflake/load_from_local.py --account <account> --user <utente>        # login SSO nel browser
+```
+Lo script esegue il codice Python contenuto in `04_procedure.sql`: le due strade producono righe identiche.
