@@ -44,9 +44,10 @@ OK Macan GTS (95BBW1, en-US): prezzo base 94200 USD (+2350 destination), 66 dota
 `V_COMPASS_STANDARD` (dotazioni di serie) e `V_COMPASS_OPTIONS_IN_SCOPE` (optional singoli in perimetro).
 `PORSCHE_MODELS.DESTINATION_CHARGE` contiene la destination charge USA.
 
-Se le tabelle esistono già da una versione precedente, ricrearle (sono ancora vuote) o aggiungere le colonne:
+Se avevi già creato le tabelle con la versione precedente, eliminale e rilancia `03_tables.sql`
+(la procedura inserisce le colonne per posizione, quindi l'ordine deve essere quello nuovo):
 ```sql
-ALTER TABLE PORSCHE_MODELS ADD COLUMN DESTINATION_CHARGE NUMBER(14,2);  -- poi riordinare: più semplice ricreare
+DROP TABLE IF EXISTS PORSCHE_MODELS; DROP TABLE IF EXISTS PORSCHE_OPTIONS;
 ```
 
 ## Codici utili
